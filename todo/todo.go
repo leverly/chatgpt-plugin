@@ -29,7 +29,7 @@ func (t *Todos) Add(username string, todo Todo) {
 
 func (t *Todos) Get(username string) []Todo {
 	t.RLock()
-	defer t.Unlock()
+	defer t.RUnlock()
 	if todos, ok := t.Map[username]; ok {
 		return todos
 	}
