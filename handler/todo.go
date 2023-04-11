@@ -1,30 +1,28 @@
-package main
+package handler
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"plugin/todo"
 )
 
-func addTodo(c *gin.Context) {
-	var todo Todo
-	if err := c.ShouldBindJSON(&todo); err != nil {
+func AddTodo(c *gin.Context) {
+	var task todo.Todo
+	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	username := c.Param("username")
-	if _, ok := todos[username]; !ok {
-		todos[username] = make([]string, 0)
-	}
-	todos[username] = append(todos[username], todo.Text)
+	todo.ToDoTask.Add(username, task)
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func getTodos(c *gin.Context) {
+func GetTodos(c *gin.Context) {
 	username := c.Param("username")
-	c.JSON(http.StatusOK, todos[username])
+	c.JSON(http.StatusOK, todo.ToDoTask.Get(username))
 }
 
-func deleteTodo(c *gin.Context) {
+func DeleteTodo(c *gin.Context) {
 	type DeleteTodo struct {
 		TodoIdx int `json:"todo_idx"`
 	}
@@ -34,8 +32,6 @@ func deleteTodo(c *gin.Context) {
 		return
 	}
 	username := c.Param("username")
-	if d.TodoIdx >= 0 && d.TodoIdx < len(todos[username]) {
-		todos[username] = append(todos[username][:d.TodoIdx], todos[username][d.TodoIdx+1:]...)
-	}
+	todo.ToDoTask.Delete(username, d.TodoIdx)
 	c.JSON(http.StatusOK, gin.H{})
 }

@@ -4,25 +4,20 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"plugin/handler"
 )
-
-type Todo struct {
-	Text string `json:"todo"`
-}
-
-var todos = make(map[string][]string)
 
 func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 
-	router.GET("/logo.png", pluginLogo)
-	router.GET("/.well-known/ai-plugin.json", pluginManifest)
-	router.GET("/openapi.yaml", openapiSpec)
+	router.GET("/logo.png", handler.PluginLogo)
+	router.GET("/.well-known/ai-plugin.json", handler.PluginManifest)
+	router.GET("/openapi.yaml", handler.OpenapiSpec)
 
-	router.POST("/todos/:username", addTodo)
-	router.GET("/todos/:username", getTodos)
-	router.DELETE("/todos/:username", deleteTodo)
+	router.POST("/todos/:username", handler.AddTodo)
+	router.GET("/todos/:username", handler.GetTodos)
+	router.DELETE("/todos/:username", handler.DeleteTodo)
 
 	if err := router.Run("localhost:5003"); err != nil {
 		log.Fatalf("failed to start server: %v", err)
