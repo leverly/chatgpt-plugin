@@ -7,7 +7,7 @@ func PluginLogo(c *gin.Context) {
 }
 
 func PluginManifest(c *gin.Context) {
-	c.File("well-known/ai-plugin.json")
+	c.File(".well-known/ai-plugin.json")
 }
 
 func OpenapiSpec(c *gin.Context) {
